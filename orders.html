@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex"><title>طلبات Wazzup Dog</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#120f0c;color:#fff;font-family:"Segoe UI",Tahoma,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:env(safe-area-inset-top,0) .8rem calc(1rem + env(safe-area-inset-bottom,0))}
+.top{position:sticky;top:0;background:#120f0c;z-index:5;padding:.7rem 0;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+h1{font-size:1.2rem;margin:0;flex:1}.st{font-size:.8rem;color:#b9ada0}.dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;background:#43c463;margin-inline-end:.3rem}.dot.bad{background:#e0453a}
+button{font:inherit;border:0;border-radius:.7rem;padding:.6rem 1rem;background:#ff5b4d;color:#fff;cursor:pointer}button.g{background:#2a231d;color:#fff;border:1px solid #3a3027}
+.tabs{display:flex;gap:.5rem;margin:.4rem 0}.tabs button{flex:1;background:#2a231d}.tabs button.on{background:#ff5b4d}
+.warn{background:#7a2a22;border-radius:.8rem;padding:.8rem;margin:.5rem 0;text-align:center}.warn button{margin-top:.4rem;background:#fff;color:#7a2a22;font-weight:800}
+.pz{background:#4a3a10;border-radius:.8rem;padding:.7rem;margin:.5rem 0;display:flex;gap:.5rem;align-items:center;justify-content:space-between}
+.err{background:#4a3a10;border-radius:.8rem;padding:.7rem;margin:.5rem 0;font-size:.9rem}
+.cd{background:#1d1814;border:2px solid #2f261f;border-radius:1rem;padding:.9rem;margin:.7rem 0}.cd.new{border-color:#ff5b4d;animation:pl 1s infinite alternate}
+@keyframes pl{from{box-shadow:0 0 0 0 rgba(255,91,77,.7)}to{box-shadow:0 0 0 .5rem rgba(255,91,77,0)}}
+.hd{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem}.id{font-weight:800;font-size:1.2rem}.bg{background:#3a3027;border-radius:99px;padding:.1rem .7rem;font-size:.85rem}.bg.r{background:#ff5b4d}
+.cu{color:#d7ccc0;margin:.2rem 0}.cu a{color:#8ecbff}pre{white-space:pre-wrap;font:inherit;font-size:1.05rem;margin:.5rem 0;background:#14100d;border-radius:.6rem;padding:.6rem}
+.tt{font-weight:800;font-size:1.1rem;color:#ffb347}.ac{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}.ac button{flex:1;min-width:5.5rem}
+.em{text-align:center;color:#b9ada0;margin:3rem 0}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:20;overflow:auto}
+.bx{background:#1d1814;border-radius:1rem;padding:1rem;width:100%;max-width:28rem}.bx input,.bx select{width:100%;font:inherit;padding:.7rem;border-radius:.6rem;border:1px solid #3a3027;background:#120f0c;color:#fff;margin:.3rem 0}.bx p{color:#b9ada0;font-size:.85rem;margin:.3rem 0}.bx .ac button{flex:1}
+</style></head><body><div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')||d;}catch(_){return d;}};
+let cfg=Object.assign({id:'',gid:'',branch:'',shop:'Wazzup Dog',cc:'973',repo:'wazzupdogbahrain-ctrl/wazzupdog-menu',tok:''},ld('ocfg',{})),rows=[],seen=new Set(ld('oseen',[])),unseen=new Set(ld('ounseen',[])),done=new Set(ld('odone',[])),lang=ld('olang','both'),first=true,sound=false,ctx=null,ringT=0,tab='act',err='',upd='',all=false,ov='',wl=null,pz=0,pmsg='';
+const sv=()=>{try{localStorage.setItem('ocfg',JSON.stringify(cfg));localStorage.setItem('oseen',JSON.stringify([...seen].slice(-800)));localStorage.setItem('ounseen',JSON.stringify([...unseen]));localStorage.setItem('odone',JSON.stringify([...done].slice(-800)));}catch(_){}};
+const LN={both:'عربي + English',ar:'عربي',en:'English'};if(!LN[lang])lang='both';
+const parseLink=u=>{const m=String(u).match(/\/spreadsheets\/d\/([\w-]+)/),g=String(u).match(/[#&?]gid=(\d+)/);return m?{id:m[1],gid:g?g[1]:''}:null;};
+function fetchRows(){return new Promise((ok,no)=>{let got=false;const s=document.createElement('script'),to=setTimeout(()=>{cl();no(new Error('timeout'));},15000),cl=()=>{clearTimeout(to);s.remove();};
+ window.google={visualization:{Query:{setResponse:r=>{got=true;cl();ok(r);}}}};s.onerror=()=>{cl();no(new Error('load'));};s.onload=()=>{if(!got){cl();no(new Error('private'));}};
+ s.src='https://docs.google.com/spreadsheets/d/'+cfg.id+'/gviz/tq?tqx=out:json&headers=1'+(cfg.gid?'&gid='+cfg.gid:'')+'&_='+Date.now();document.head.appendChild(s);});}
+const pd=v=>{const m=String(v).match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);return m?new Date(+m[1],+m[2],+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)):null;};
+/* ---- parsing & formatting ---- */
+const pick=(s,l)=>{const p=String(s).split(' / ');return p.length<2?String(s):(l==='en'?p[0]:l==='ar'?p[1]:p[0]+' · '+p[1]);};
+const fmtType=(ty,l)=>{const t=String(ty);if(/^dine/i.test(t)||/طاولة/.test(t)){const n=t.replace(/^.*?(?:طاولة|Table)\s*/i,'').trim();return l==='en'?'Dine-in · Table '+n:l==='ar'?'داخل المحل · طاولة '+n:'Dine-in · طاولة '+n;}if(/deliver|توصيل/i.test(t))return l==='en'?'Delivery':l==='ar'?'توصيل':'Delivery · توصيل';if(/pickup|استلام/i.test(t))return l==='en'?'Pickup':l==='ar'?'استلام':'Pickup · استلام';return t;};
+const nm=(x,l)=>l==='en'?(x.en||x.ar):l==='ar'?(x.ar||x.en):(x.ar&&x.en?x.en+' — '+x.ar:(x.en||x.ar));
+function parseOrder(t){const items=[];let disc=null,fee='',addr='',note='';String(t).split('\n').forEach(line=>{let m=line.match(/^(\d+)× (.*?) — ([\d.,]+)(?: \| (.*))?$/);if(m){const n=m[2].split(' ‖ ');items.push({q:m[1],en:n[0]||'',ar:n[1]||'',price:m[3],note:m[4]||'',ao:[]});return;}
+ m=line.match(/^\s+\+ (.*?)(?: \(([\d.,]+)\))?$/);if(m&&items.length){const n=m[1].split(' ‖ ');items[items.length-1].ao.push({en:n[0]||'',ar:n[1]||'',p:m[2]||''});return;}
+ m=line.match(/^🏷 (\S+) [−-]([\d.,]+)/);if(m){disc={code:m[1],amt:m[2]};return;}m=line.match(/^🚚 \+?([\d.,]+)/);if(m){fee=m[1];return;}
+ if(/^📍/.test(line)){addr=line.replace(/^📍\s*/,'');return;}if(/^📝/.test(line))note+=(note?'\n':'')+line.replace(/^📝\s*/,'');else if(line.trim())note+=(note?'\n':'')+line;});return{items:items,disc:disc,fee:fee,addr:addr,note:note};}
+function fmtOrder(t,l){const p=parseOrder(t);let r=p.items.map(i=>i.q+'× '+nm(i,l)+' — '+i.price+(i.note?'   📝 '+i.note:'')+i.ao.map(a=>'\n     + '+nm(a,l)).join('')).join('\n');if(p.disc)r+='\n🏷 '+p.disc.code+' −'+p.disc.amt;if(p.fee)r+='\n🚚 +'+p.fee;if(p.addr)r+='\n📍 '+p.addr;if(p.note)r+='\n📝 '+p.note;return r;}
+function conv(r){const n=r.table.cols.length,cell=(row,i)=>{const c=row.c&&row.c[i];return c?(c.f!=null?c.f:(c.v!=null?c.v:'')):'';},rv=(row,i)=>{const c=row.c&&row.c[i];return c&&c.v!=null?c.v:'';};
+ return r.table.rows.map((row,k)=>{const d=pd(rv(row,0)),oi=n>=8?6:n===7?5:4,ord=String(cell(row,oi)),m=ord.match(/#(W\d+)/),ty=String(cell(row,3)),x=ty.split(' — '),tt=String(cell(row,oi+1)).split(' — ');
+  return{k:(m?m[1]:'r'+k)+'|'+(d?d.getTime():k),id:m?m[1]:'',d:d,name:String(cell(row,1)),phone:String(cell(row,2)),type:n>=7?ty:x[0],br:n>=7?String(cell(row,4)):(x[1]||''),pay:n>=8?String(cell(row,5)):(tt[1]||''),order:ord.replace(/^#W\d+\n?/,''),total:tt[0]};}).filter(o=>o.order||o.name);}
+const isToday=d=>{if(!d)return true;const t=new Date();return d.getFullYear()===t.getFullYear()&&d.getMonth()===t.getMonth()&&d.getDate()===t.getDate();};
+const vis=o=>(all||isToday(o.d))&&(!cfg.branch||o.br.indexOf(cfg.branch)>-1);
+/* ---- receipt / invoice ---- */
+const L1=l=>l==='both'?'ar':l;
+function rcHTML(o,l){const p=parseOrder(o.order),L=L1(l),rtl=L==='ar',t=o.d?o.d.toLocaleString(rtl?'ar':'en-GB'):'',row=(a,b)=>'<tr><td>'+a+'</td><td style="text-align:end;white-space:nowrap">'+b+'</td></tr>';
+ return '<html dir="'+(rtl?'rtl':'ltr')+'"><head><meta charset="utf-8"><style>@page{size:80mm auto;margin:3mm}body{font:13px/1.45 monospace;width:74mm;margin:0;color:#000}h1{font-size:18px;text-align:center;margin:2mm 0}hr{border:0;border-top:1px dashed #000}table{width:100%;border-collapse:collapse}td{vertical-align:top;padding:1px 0}.c{text-align:center}</style></head><body><h1>'+esc(cfg.shop||'Wazzup Dog')+'</h1>'+(o.br?'<div class="c">'+esc(pick(o.br,L))+'</div>':'')+'<div class="c">#'+esc(o.id)+' — '+esc(t)+'</div><hr><div>'+esc(fmtType(o.type,L))+'</div><div>'+esc(o.name)+' '+esc(o.phone)+'</div>'+(p.addr?'<div>📍 '+esc(p.addr)+'</div>':'')+'<hr><table>'+p.items.map(i=>row(i.q+'× '+esc(nm(i,L))+(i.note?'<br>↳ '+esc(i.note):'')+i.ao.map(a=>'<br>&nbsp;&nbsp;+ '+esc(nm(a,L))).join(''),esc(i.price))).join('')+'</table>'+(p.disc?'<div>🏷 '+esc(p.disc.code)+' −'+esc(p.disc.amt)+'</div>':'')+(p.fee?'<div>🚚 +'+esc(p.fee)+'</div>':'')+'<hr><table>'+row('<b>'+(rtl?'الإجمالي':'TOTAL')+'</b>','<b>'+esc(o.total)+'</b>')+(o.pay?row(rtl?'الدفع':'Payment',esc(pick(o.pay,L))):'')+'</table>'+(p.note?'<hr><div>📝 '+esc(p.note)+'</div>':'')+'<hr><div class="c">'+(rtl?'شكراً لزيارتكم':'Thank you!')+'</div></body></html>';}
+function printRc(o){const f=document.createElement('iframe');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);const dd=f.contentWindow.document;dd.open();dd.write(rcHTML(o,lang));dd.close();setTimeout(()=>{try{f.contentWindow.focus();f.contentWindow.print();}catch(_){}setTimeout(()=>f.remove(),3000);},300);}
+function invText(o,l){const p=parseOrder(o.order),L=L1(l),ar=L==='ar';return (cfg.shop||'Wazzup Dog')+'\n'+(ar?'فاتورة طلب ':'Order receipt ')+'#'+o.id+'\n'+(o.d?o.d.toLocaleString(ar?'ar':'en-GB'):'')+'\n──────────\n'+p.items.map(i=>i.q+'× '+nm(i,L)+' — '+i.price+i.ao.map(a=>'\n   + '+nm(a,L)).join('')).join('\n')+(p.disc?'\n🏷 '+p.disc.code+' −'+p.disc.amt:'')+(p.fee?'\n🚚 +'+p.fee:'')+'\n──────────\n'+(ar?'الإجمالي: ':'Total: ')+o.total+(o.pay?'\n'+(ar?'الدفع: ':'Payment: ')+pick(o.pay,L):'')+'\n'+(ar?'شكراً لطلبك 🌭':'Thank you 🌭');}
+const intl=p=>{let d=String(p||'').replace(/\D/g,'').replace(/^00/,'');if(d.length<=8)d=(cfg.cc||'973')+d.replace(/^0+/,'');return d;};
+/* ---- sound ---- */
+function beep(){try{ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();if(ctx.resume)ctx.resume();[880,660,880].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime+i*.28;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.7,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.26);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+.27);});}catch(_){}}
+const nUn=()=>rows.filter(o=>unseen.has(o.k)&&!done.has(o.k)&&vis(o)).length;
+function ring(){if(sound)beep();document.title='🔔 ('+nUn()+') طلب جديد';}
+function syncRing(){clearInterval(ringT);if(nUn()){ring();ringT=setInterval(()=>{if(nUn())ring();else syncRing();},3500);}else document.title='طلبات Wazzup Dog';}
+function wake(){try{if(navigator.wakeLock)navigator.wakeLock.request('screen').then(l=>{wl=l;}).catch(()=>{});}catch(_){}}
+/* ---- pause (status.json) ---- */
+async function loadPz(){try{const r=await fetch('status.json?t='+Date.now(),{cache:'no-store'});pz=r.ok?(+(await r.json()).until||0):0;}catch(_){}}
+function morning(){const d=new Date();d.setHours(6,0,0,0);if(d<=new Date())d.setDate(d.getDate()+1);return d.getTime();}
+async function setPz(ms){if(!cfg.tok)throw{m:'الصق الـ Token في الإعدادات الأول'};const until=ms==='day'?morning():(+ms>0?Date.now()+(+ms):0),u='https://api.github.com/repos/'+cfg.repo+'/contents/status.json',H={Authorization:'Bearer '+cfg.tok,Accept:'application/vnd.github+json'};let sha;
+ try{const g=await fetch(u+'?t='+Date.now(),{headers:H,cache:'no-store'});if(g.ok)sha=(await g.json()).sha;}catch(_){}
+ const body={message:until?'Pause until '+new Date(until).toISOString():'Reopen ordering',content:btoa(JSON.stringify({until:until,set:Date.now()}))};if(sha)body.sha=sha;
+ const p=await fetch(u,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify(body)});if(!p.ok)throw{m:p.status===401?'الـ Token غلط أو منتهي':p.status===403||p.status===404?'الـ Token مالوش صلاحية على الـ repo':'خطأ '+p.status};pz=until;return until;}
+/* ---- polling ---- */
+async function poll(){if(!cfg.id)return;try{const r=await fetchRows();if(r.status!=='ok')throw new Error('status');const list=conv(r);err='';
+  if(first&&!seen.size)list.forEach(o=>seen.add(o.k));else list.forEach(o=>{if(!seen.has(o.k)){seen.add(o.k);unseen.add(o.k);}});
+  first=false;rows=list;upd=new Date().toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});sv();}
+ catch(e){err=(e.message==='private'||e.message==='status')?'مش قادر أقرا الجدول. اتأكد إنه مشارك بالرابط (أي حد معاه الرابط: مشاهد).':'مفيش اتصال بالإنترنت أو الجدول مش متاح. بحاول تاني…';}
+ await loadPz();draw();syncRing();}
+/* ---- UI ---- */
+function card(o){const nw=unseen.has(o.k)&&!done.has(o.k),dn=done.has(o.k),t=o.d?o.d.toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'}):'';
+ return '<div class="cd'+(nw?' new':'')+'" data-c="'+esc(o.k)+'"><div class="hd"><span class="id">#'+esc(o.id||'—')+'</span><span class="st">'+esc(t)+'</span>'+(nw?'<span class="bg r">جديد</span>':'')+(o.br?'<span class="bg">'+esc(pick(o.br,lang))+'</span>':'')+'<span class="bg">'+esc(fmtType(o.type,lang))+'</span>'+(o.pay?'<span class="bg">💳 '+esc(pick(o.pay,lang))+'</span>':'')+'</div>'+
+ '<div class="cu">'+esc(o.name)+' — <a href="tel:'+esc(String(o.phone).replace(/[^\d+]/g,''))+'">'+esc(o.phone)+'</a></div><pre>'+esc(fmtOrder(o.order,lang))+'</pre><div class="tt">'+esc(o.total)+'</div>'+
+ '<div class="ac">'+(dn?'<button class="g" data-undo="'+esc(o.k)+'">↩️ رجّعه</button>':(nw?'<button data-ack="'+esc(o.k)+'">👍 استلمت</button>':'')+'<button class="'+(nw?'g':'')+'" data-done="'+esc(o.k)+'">✅ تم</button>')+'<button class="g" data-print="'+esc(o.k)+'">🖨 طباعة</button><button class="g" data-wa2="'+esc(o.k)+'">📲 فاتورة واتساب</button></div></div>';}
+function sumHTML(list){if(all||!list.length)return '';const sm=list.reduce((a,x)=>a+(parseFloat(String(x.total).replace(',','.'))||0),0),cu=String(list[0].total).replace(/[\d.,\s]/g,'');return '<p class="st" style="margin:.2rem 0">اليوم: '+list.length+' طلب • '+sm.toFixed(3)+' '+esc(cu)+'</p>';}
+function ovHTML(){const br=[...new Set(rows.map(o=>o.br).filter(Boolean))];
+ if(ov==='pz')return '<div id="ov"><div class="bx"><h1>⏸ إيقاف الطلبات أونلاين</h1><p>الزباين مش هيقدروا يطلبوا لحد الوقت اللي تختاره. بياخد دقيقة أو اتنين عشان يوصل للزباين.</p><div class="ac"><button data-pz="900000">15 دقيقة</button><button data-pz="3600000">ساعة</button></div><div class="ac"><button data-pz="day">باقي اليوم</button><button class="g" data-pz="0">▶️ فتح الطلبات</button></div><p id="pm" style="color:#ffb347">'+esc(pmsg)+'</p><div class="ac"><button class="g" data-a="close">إغلاق</button></div></div></div>';
+ return '<div id="ov"><div class="bx"><h1>⚙️ الإعدادات</h1><p>رابط جدول جوجل (Google Sheet) اللي فيه ردود النموذج. لازم يكون مشارك بالرابط (أي حد معاه الرابط: مشاهد).</p><input id="lk" dir="ltr" placeholder="https://docs.google.com/spreadsheets/d/..." value="'+esc(cfg.id?'https://docs.google.com/spreadsheets/d/'+cfg.id+(cfg.gid?'/edit?gid='+cfg.gid:''):'')+'"><p>الفرع اللي الجهاز ده يعرض طلباته:</p><select id="bsel"><option value="">كل الفروع</option>'+br.map(b=>'<option value="'+esc(b)+'"'+(cfg.branch===b?' selected':'')+'>'+esc(b)+'</option>').join('')+(cfg.branch&&br.indexOf(cfg.branch)<0?'<option value="'+esc(cfg.branch)+'" selected>'+esc(cfg.branch)+'</option>':'')+'</select><p>اسم المحل على الفاتورة:</p><input id="shp" value="'+esc(cfg.shop)+'"><p>كود الدولة لأرقام الواتساب (البحرين 973):</p><input id="ccd" dir="ltr" inputmode="numeric" value="'+esc(cfg.cc)+'"><p>لزرار إيقاف الطلبات (اختياري): اسم الـ repo ومفتاح GitHub (Token):</p><input id="rpo" dir="ltr" value="'+esc(cfg.repo)+'"><input id="tok" dir="ltr" type="password" placeholder="github_pat_…" value="'+esc(cfg.tok)+'"><p id="sm" style="color:#ffb347"></p><div class="ac"><button data-a="save">حفظ</button>'+(cfg.id?'<button class="g" data-a="close">إلغاء</button>':'')+'</div></div></div>';}
+function draw(){const a=$('#app');if(!cfg.id){a.innerHTML=ovHTML();return;}
+ const list=rows.filter(vis).slice().reverse(),act=list.filter(o=>!done.has(o.k)),dn=list.filter(o=>done.has(o.k)),shown=tab==='act'?act:dn,n=nUn(),paused=pz>Date.now();
+ a.innerHTML='<div class="top"><h1>🔔 طلبات '+esc(cfg.shop||'Wazzup Dog')+'</h1><span class="st"><span class="dot'+(err?' bad':'')+'"></span>'+(upd?'آخر تحديث '+esc(upd):'جاري التحميل…')+'</span><button class="g" data-a="pzm">⏸</button><button class="g" data-a="lang">🌐 '+LN[lang]+'</button><button class="g" data-a="set">⚙️</button></div>'+sumHTML(list)+
+ (paused?'<div class="pz"><span>⏸ الطلب أونلاين متوقف لحد '+esc(new Date(pz).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'}))+'</span><button data-pz="0">▶️ فتح</button></div>':'')+
+ (!sound?'<div class="warn">الصوت مقفول. اضغط الزرار مرة واحدة عشان تسمع تنبيه الطلبات.<br><button data-a="snd">🔔 فعّل الصوت</button></div>':'')+(err?'<div class="err">'+esc(err)+'</div>':'')+
+ (n?'<button style="width:100%;margin:.3rem 0" class="g" data-a="mute">🔕 إسكات ('+n+')</button>':'')+
+ '<div class="tabs"><button class="'+(tab==='act'?'on':'')+'" data-tab="act">الطلبات ('+act.length+')</button><button class="'+(tab==='dn'?'on':'')+'" data-tab="dn">تم ('+dn.length+')</button></div>'+
+ (shown.length?shown.map(card).join(''):'<div class="em">'+(tab==='act'?'مفيش طلبات دلوقتي':'مفيش حاجة هنا')+'</div>')+
+ '<p class="st" style="text-align:center"><label><input type="checkbox" data-a="all"'+(all?' checked':'')+'> اعرض طلبات الأيام اللي فاتت كمان</label></p>'+(ov?ovHTML():'');}
+document.addEventListener('click',async e=>{const t=e.target.closest('button,input[data-a]');if(!t)return;const d=t.dataset;
+ if(d.tab){tab=d.tab;draw();return;}if(d.ack){unseen.delete(d.ack);sv();draw();syncRing();return;}
+ if(d.done){done.add(d.done);unseen.delete(d.done);sv();draw();syncRing();return;}if(d.undo){done.delete(d.undo);sv();draw();return;}
+ if(d.print){const o=rows.find(x=>x.k===d.print);if(o)printRc(o);return;}
+ if(d.wa2){const o=rows.find(x=>x.k===d.wa2);if(o)window.open('https://wa.me/'+intl(o.phone)+'?text='+encodeURIComponent(invText(o,lang)),'_blank');return;}
+ if(d.pz!==undefined){pmsg='جارٍ التحديث…';draw();try{const u=await setPz(d.pz);pmsg=u?'تم الإيقاف لحد '+new Date(u).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})+' ✓':'تم فتح الطلبات ✓';}catch(er){pmsg=(er&&er.m)||'فشل التحديث';}draw();return;}
+ if(d.a==='pzm'){ov='pz';pmsg='';draw();return;}
+ if(d.a==='lang'){lang=lang==='both'?'ar':lang==='ar'?'en':'both';try{localStorage.setItem('olang',JSON.stringify(lang));}catch(_){}draw();return;}
+ if(d.a==='snd'){sound=true;beep();wake();draw();return;}if(d.a==='mute'){rows.filter(vis).forEach(o=>unseen.delete(o.k));sv();draw();syncRing();return;}
+ if(d.a==='set'){ov='set';draw();return;}if(d.a==='close'){ov='';draw();return;}if(d.a==='all'){all=t.checked;draw();syncRing();return;}
+ if(d.a==='save'){const p=parseLink($('#lk').value);if(!p){$('#sm').textContent='ده مش رابط جدول جوجل. انسخه من زرار المشاركة في الجدول.';return;}cfg=Object.assign(cfg,{id:p.id,gid:p.gid,branch:$('#bsel').value,shop:$('#shp').value.trim()||'Wazzup Dog',cc:($('#ccd').value.replace(/\D/g,''))||'973',repo:$('#rpo').value.trim()||cfg.repo,tok:$('#tok').value.trim()});ov='';first=true;rows=[];sv();draw();poll();}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){wake();poll();}});
+draw();setTimeout(poll,0);setInterval(poll,8000);
+</script></body></html>
